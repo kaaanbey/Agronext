@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AgroNext — Sera Paneli</title>
+<!--
+  AgroNext — Çiftçi paneli v2 (agronext.net/panel)
+  ================================================
+  Bu sayfa Supabase'e doğrudan bağlanır. ESP32'ye ASLA bağlanmaz; kartlar
+  veriyi kendileri dışarı gönderir (outbound-only).
+
+  GÜVENLİK KARARLARI (neden böyle?):
+   1) Sayfada YALNIZ publishable (anon) anahtar var. Herkese açıktır; onunla
+      veri okunamaz. Okuma yetkisi girişten sonraki kullanıcı oturumundan gelir.
+   2) Sorgularda cihaz_id / sera_id ile GÜVENLİK filtresi yapılmaz. Kim neyi
+      görür kararı veritabanındaki RLS'tedir. (Gelen satırları ekranda cihaza
+      göre gruplamak yalnız görüntülemedir, yetki değildir.)
+   3) Ekrana yazarken yalnız textContent; innerHTML asla.
+   4) Onayla/Reddet POMPAYI ÇALIŞTIRMAZ. Yalnız kayıttır; uzaktan komut yok.
+   5) Satır içi <script>/<style>/style="" yok → sıkı CSP ('unsafe-inline' yok).
+   6) supabase-js SABİT SÜRÜM + SRI hash. Sürüm yükseltilirse hash yeniden:
+        curl -s <URL> | openssl dgst -sha384 -binary | openssl base64 -A
+
+  Yollar mutlak (/panel/...), çünkü sitede sayfa agronext.net/panel olarak açılır.
+  Yerel test: python3 -m http.server 8765 --bind 127.0.0.1 -d ~/Desktop/AGRONEXT
+              → http://127.0.0.1:8765/panel/
+-->
+<link rel="stylesheet" href="/panel/panel.css">
+</head>
+<body>
+
+<!-- ============================================================ giriş -->
+<section id="giris" class="giris cam">
+  <img class="giris-logo" src="/panel/logo.png" alt="AgroNext">
+  <p class="soluk">Serasının verilerini görmek için giriş yap.</p>
+  <!-- method="post": JS yüklenmezse tarayıcı şifreyi URL'ye (GET) yazmasın. -->
+  <form id="giris_form" method="post" action="#">
+    <label for="eposta">E-posta</label>
+    <input id="eposta" type="email" autocomplete="username" required>
+    <label for="sifre">Şifre</label>
+    <input id="sifre" type="password" autocomplete="current-password" required>
+    <button type="submit" id="giris_btn" class="dugme ana">Giriş yap</button>
+  </form>
+  <div class="hata" id="giris_hata" role="alert"></div>
+</section>
+
+<!-- ============================================================ uygulama -->
+<div id="uygulama" class="uygulama gizli">
+
+  <nav class="menu" aria-label="Panel bölümleri">
+    <a class="menu-logo" href="#genel"><img src="/panel/logo.png" alt="AgroNext"></a>
+    <a class="menu-dugme" href="#genel" data-sekme="genel">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Genel Bakış</span></a>
+    <a class="menu-dugme" href="#cihazlar" data-sekme="cihazlar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+      <span>Cihazlar</span></a>
+    <a class="menu-dugme" href="#yz" data-sekme="yz">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
+      <span>Yapay Zekâ</span><b class="rozet gizli" id="oneri_rozet"></b></a>
+    <a class="menu-dugme" href="#gecmis" data-sekme="gecmis">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span>Geçmiş</span></a>
+    <a class="menu-dugme" href="#ayarlar" data-sekme="ayarlar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span>Ayarlar</span></a>
+  </nav>
+
+  <div class="icerik">
+    <header class="ust">
+      <img class="ust-logo" src="/panel/logo.png" alt="AgroNext">
+      <div>
+        <h1 id="sera_ad">Sera</h1>
+        <p class="soluk kucuk" id="guncelleme">Yükleniyor…</p>
+      </div>
+      <span class="kullanici soluk kucuk" id="kullanici"></span>
+    </header>
+
+    <!-- ------------------------------------------------ Genel Bakış -->
+    <section class="sekme" id="s_genel">
+      <div class="genel-ust">
+        <figure class="hero cam">
+          <img id="hero_img" src="/panel/hero.jpg" alt="AgroNext sera düzeneği" loading="lazy">
+          <figcaption class="hero-yok gizli" id="hero_yok">
+            Düzenek fotoğrafı buraya gelecek<br><span class="kucuk">panel/hero.jpg</span>
+          </figcaption>
+        </figure>
+
+        <article class="kart cam tahmin-kart">
+          <h2>Sulama Tahmini</h2>
+          <div class="gosterge">
+            <svg viewBox="0 0 200 112" aria-hidden="true">
+              <path class="gosterge-zemin" d="M16 100 A84 84 0 0 1 184 100" pathLength="100"/>
+              <path class="gosterge-dolu" id="gosterge_dolu" d="M16 100 A84 84 0 0 1 184 100"
+                    pathLength="100" stroke-dasharray="0 100"/>
+            </svg>
+            <div class="gosterge-deger"><span id="tahmin_yuzde">—</span></div>
+          </div>
+          <p class="tahmin-metin" id="tahmin_metin">Tahmin bekleniyor</p>
+          <p class="not" id="tahmin_not"></p>
+        </article>
+      </div>
+
+      <div class="olcum-izgara" id="olcumler"></div>
+
+      <article class="kart cam">
+        <h2>Cihazlar</h2>
+        <ul class="cihaz-ozet" id="cihaz_ozet"></ul>
+      </article>
+    </section>
+
+    <!-- ------------------------------------------------ Cihazlar -->
+    <section class="sekme gizli" id="s_cihazlar">
+      <div class="cihaz-izgara" id="cihaz_kartlari"></div>
+      <p class="not" id="cihaz_not"></p>
+    </section>
+
+    <!-- ------------------------------------------------ Yapay Zekâ -->
+    <section class="sekme gizli" id="s_yz">
+      <article class="kart cam">
+        <h2>Bekleyen öneriler</h2>
+        <div id="oneriler" class="oneriler"></div>
+        <p class="not vurgulu">Onay kayıt amaçlıdır, pompayı uzaktan çalıştırmaz.</p>
+      </article>
+
+      <article class="kart cam">
+        <h2>Tahmin vs gerçek · son 24 saat</h2>
+        <div class="ozet-satir" id="yz_ozet"></div>
+        <canvas id="yz_grafik" class="grafik"></canvas>
+        <div class="lejant">
+          <span><i class="nokta yesil"></i>doğru</span>
+          <span><i class="nokta amber"></i>yanlış</span>
+          <span><i class="nokta bos"></i>değerlendirme bekliyor</span>
+          <span><i class="nokta gri"></i>ölçüm yok</span>
+        </div>
+        <p class="not" id="yz_tanim"></p>
+        <p class="not" id="yz_kayit"></p>
+      </article>
+    </section>
+
+    <!-- ------------------------------------------------ Geçmiş -->
+    <section class="sekme gizli" id="s_gecmis">
+      <article class="kart cam">
+        <div class="baslik-satir">
+          <h2>Ölçümler</h2>
+          <div class="secici" role="group" aria-label="Zaman aralığı">
+            <button class="secici-dugme" data-saat="6">6 saat</button>
+            <button class="secici-dugme secili" data-saat="24">24 saat</button>
+            <button class="secici-dugme" data-saat="168">7 gün</button>
+          </div>
+        </div>
+        <div class="grafikler" id="grafikler"></div>
+        <p class="not">Ölçülemeyen aralıklar boş bırakılır, ara değer uydurulmaz.</p>
+      </article>
+
+      <article class="kart cam">
+        <h2>Aktivite geçmişi</h2>
+        <ol class="aktivite" id="aktivite"></ol>
+      </article>
+    </section>
+
+    <!-- ------------------------------------------------ Ayarlar -->
+    <section class="sekme gizli" id="s_ayarlar">
+      <article class="kart cam ayarlar">
+        <h2>Hesap</h2>
+        <dl>
+          <dt>E-posta</dt><dd id="ayar_eposta">—</dd>
+          <dt>Sera</dt><dd id="ayar_sera">—</dd>
+        </dl>
+        <button id="cikis" class="dugme ikincil">Çıkış yap</button>
+      </article>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"
+        integrity="sha384-K1nraABOP/zFehpLIUksXebbs7jMpB8gYMlb+uhVKZcWT/9Vkq1+qhv6ndC+1Yuz"
+        crossorigin="anonymous"></script>
+<script src="/panel/panel.js"></script>
+</body>
+</html>

@@ -16,6 +16,12 @@ const AUTH_PAGES_REGEX = /^\/(tr|en)\/auth\/(login|register|forgot-password)(\/|
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // /panel: sera paneli (public/panel/). Dile bağlı değil, kendi girişi var
+  // (Supabase Auth + RLS). next-intl onu /tr/panel'e yönlendirip 404 verdirmesin.
+  if (pathname === "/panel" || pathname.startsWith("/panel/")) {
+    return NextResponse.next()
+  }
+
   // Static and internal assets handled upstream via matcher
 
   const isDashboard = DASHBOARD_REGEX.test(pathname)

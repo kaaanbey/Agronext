@@ -77,6 +77,11 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-1">
+          {/* Sera paneli dile bağlı değil: i18n Link'i /tr/panel yapıp 404 verdirirdi,
+              bu yüzden düz <a>. Kendi girişi var (Supabase), sitenin girişinden bağımsız. */}
+          <Button variant="outline" size="sm" className="mr-1" asChild>
+            <a href="/panel">{tNav("greenhousePanel")}</a>
+          </Button>
           <LocaleSwitcher />
           <ThemeToggle />
           {status === "authenticated" && session?.user ? (
@@ -140,6 +145,12 @@ export function Navbar() {
                 {l.label}
               </Link>
             ))}
+            <a
+              href="/panel"
+              className="text-sm font-medium py-2 text-muted-foreground hover:text-foreground"
+            >
+              {tNav("greenhousePanel")}
+            </a>
             <div className="flex items-center gap-2 pt-2 border-t">
               <LocaleSwitcher />
               <ThemeToggle />
