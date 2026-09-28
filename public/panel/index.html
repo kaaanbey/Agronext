@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>AgroNext — Sera Paneli</title>
 <!--
-  AgroNext — Çiftçi paneli v2 (agronext.net/panel)
+  AgroNext — Çiftçi paneli v3 (agronext.net/panel)
   ================================================
   Bu sayfa Supabase'e doğrudan bağlanır. ESP32'ye ASLA bağlanmaz; kartlar
   veriyi kendileri dışarı gönderir (outbound-only).
@@ -22,6 +22,8 @@
    5) Satır içi <script>/<style>/style="" yok → sıkı CSP ('unsafe-inline' yok).
    6) supabase-js SABİT SÜRÜM + SRI hash. Sürüm yükseltilirse hash yeniden:
         curl -s <URL> | openssl dgst -sha384 -binary | openssl base64 -A
+   7) NexAI tarayıcıda çalışır, hiçbir yere istek atmaz: yanıtlar yalnız bu
+      sayfanın zaten okuduğu veriden üretilir (bkz. panel.js "NexAI").
 
   Yollar mutlak (/panel/...), çünkü sitede sayfa agronext.net/panel olarak açılır.
   Yerel test: python3 -m http.server 8765 --bind 127.0.0.1 -d ~/Desktop/AGRONEXT
@@ -32,7 +34,7 @@
 <body>
 
 <!-- ============================================================ giriş -->
-<section id="giris" class="giris cam">
+<section id="giris" class="giris kart">
   <img class="giris-logo" src="/panel/logo.png" alt="AgroNext">
   <p class="soluk">Serasının verilerini görmek için giriş yap.</p>
   <!-- method="post": JS yüklenmezse tarayıcı şifreyi URL'ye (GET) yazmasın. -->
@@ -51,64 +53,126 @@
 
   <nav class="menu" aria-label="Panel bölümleri">
     <a class="menu-logo" href="#genel"><img src="/panel/logo.png" alt="AgroNext"></a>
+
+    <div class="menu-grup">İzleme</div>
     <a class="menu-dugme" href="#genel" data-sekme="genel">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
       <span>Genel Bakış</span></a>
     <a class="menu-dugme" href="#cihazlar" data-sekme="cihazlar">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9.5 9.5h5v5h-5zM9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
       <span>Cihazlar</span></a>
+    <a class="menu-dugme" href="#uyarilar" data-sekme="uyarilar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9.5 17h-19zM12 10v4M12 17.5h.01"/></svg>
+      <span>Uyarılar</span><b class="rozet gizli" id="uyari_rozet"></b></a>
+    <a class="menu-dugme" href="#gecmis" data-sekme="gecmis">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      <span>Geçmiş</span></a>
+
+    <div class="menu-grup">Zekâ</div>
     <a class="menu-dugme" href="#yz" data-sekme="yz">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
       <span>Yapay Zekâ</span><b class="rozet gizli" id="oneri_rozet"></b></a>
-    <a class="menu-dugme" href="#gecmis" data-sekme="gecmis">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-      <span>Geçmiş</span></a>
+    <a class="menu-dugme" href="#nexai" data-sekme="nexai">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></svg>
+      <span>NexAI</span></a>
+
+    <div class="menu-grup">Hesap</div>
     <a class="menu-dugme" href="#ayarlar" data-sekme="ayarlar">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
       <span>Ayarlar</span></a>
+
+    <!-- Kesinti dayanıklılığı: bu panel bulut kopyasıdır; ölçüm ve tahmin laptopta sürer. -->
+    <div class="menu-yerel">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+      <div><b>Yerel hat bağımsız</b>
+        <span>İnternet kesilse de ölçüm ve tahmin sahadaki laptopta sürer.</span></div>
+    </div>
   </nav>
 
   <div class="icerik">
     <header class="ust">
       <img class="ust-logo" src="/panel/logo.png" alt="AgroNext">
-      <div>
-        <h1 id="sera_ad">Sera</h1>
+      <div class="ust-sol">
+        <div class="ust-baslik">
+          <h1 id="sera_ad">Sera</h1>
+          <span class="durum-hap" id="sistem_durumu"><i></i><span>Bağlanıyor</span></span>
+        </div>
         <p class="soluk kucuk" id="guncelleme">Yükleniyor…</p>
       </div>
-      <span class="kullanici soluk kucuk" id="kullanici"></span>
+      <div class="kullanici">
+        <span class="soluk kucuk" id="kullanici"></span>
+        <span class="avatar" id="avatar" aria-hidden="true"></span>
+      </div>
     </header>
 
     <!-- ------------------------------------------------ Genel Bakış -->
     <section class="sekme" id="s_genel">
-      <div class="genel-ust">
-        <figure class="hero cam">
-          <img id="hero_img" src="/panel/hero.jpg" alt="AgroNext sera düzeneği" loading="lazy">
-          <figcaption class="hero-yok gizli" id="hero_yok">
-            Düzenek fotoğrafı buraya gelecek<br><span class="kucuk">panel/hero.jpg</span>
-          </figcaption>
-        </figure>
+      <div class="ozet-bar" id="ozet_bar"></div>
 
-        <article class="kart cam tahmin-kart">
-          <h2>Sulama Tahmini</h2>
-          <div class="gosterge">
-            <svg viewBox="0 0 200 112" aria-hidden="true">
-              <path class="gosterge-zemin" d="M16 100 A84 84 0 0 1 184 100" pathLength="100"/>
-              <path class="gosterge-dolu" id="gosterge_dolu" d="M16 100 A84 84 0 0 1 184 100"
-                    pathLength="100" stroke-dasharray="0 100"/>
-            </svg>
-            <div class="gosterge-deger"><span id="tahmin_yuzde">—</span></div>
+      <div class="genel-izgara">
+        <div class="genel-ana">
+          <div class="genel-ust">
+            <figure class="hero kart" id="hero">
+              <img id="hero_img" src="/panel/hero.jpg" alt="AgroNext sera düzeneği" loading="lazy">
+              <figcaption class="hero-yok gizli" id="hero_yok">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg>
+                Düzenek fotoğrafı buraya gelecek<br><span class="kucuk">panel/hero.jpg</span>
+              </figcaption>
+              <div class="hero-etiket">Demo düzeneği · canlı</div>
+              <div class="noktalar" id="noktalar"></div>
+            </figure>
+
+            <article class="kart tahmin-kart">
+              <div class="kart-baslik">
+                <h2>Sulama Tahmini</h2>
+                <span class="etiket yz">Yapay zekâ</span>
+              </div>
+              <div class="gosterge">
+                <svg viewBox="0 0 200 112" aria-hidden="true">
+                  <path class="gosterge-zemin" d="M16 100 A84 84 0 0 1 184 100" pathLength="100"/>
+                  <path class="gosterge-dolu" id="gosterge_dolu" d="M16 100 A84 84 0 0 1 184 100"
+                        pathLength="100" stroke-dasharray="0 100"/>
+                </svg>
+                <div class="gosterge-deger"><span id="tahmin_yuzde">—</span>
+                  <small id="tahmin_ufuk">sulama olasılığı</small></div>
+              </div>
+              <div class="oneri-kutu" id="tahmin_oneri">
+                <b id="tahmin_metin">Tahmin bekleniyor</b>
+                <span id="tahmin_neden"></span>
+              </div>
+              <p class="not" id="tahmin_not"></p>
+            </article>
           </div>
-          <p class="tahmin-metin" id="tahmin_metin">Tahmin bekleniyor</p>
-          <p class="not" id="tahmin_not"></p>
-        </article>
+
+          <div class="bolum-baslik"><h2>Canlı sera verileri</h2><span class="soluk kucuk">Son değer · 6 saatlik eğilim</span></div>
+          <div class="olcum-izgara" id="olcumler"></div>
+
+          <article class="kart">
+            <div class="kart-baslik">
+              <h2>Uyarılar</h2>
+              <a class="baglanti" href="#uyarilar">Tümü →</a>
+            </div>
+            <div class="uyari-liste" id="uyari_ozet"></div>
+          </article>
+
+          <article class="kart">
+            <div class="kart-baslik"><h2>Son 24 saat</h2><a class="baglanti" href="#gecmis">Geçmiş →</a></div>
+            <div class="mini-trendler" id="mini_trendler"></div>
+          </article>
+        </div>
+
+        <aside class="genel-yan">
+          <article class="kart karar-kart">
+            <div class="kart-baslik">
+              <h2>AI Karar Özeti</h2>
+              <span class="etiket gerekce">Karar gerekçesi</span>
+            </div>
+            <dl class="karar" id="karar_ozet"></dl>
+          </article>
+          <!-- NexAI sohbeti tek bir DOM düğümüdür; hangi sekme açıksa oraya taşınır. -->
+          <div class="sohbet-yuva" id="yuva_genel"></div>
+        </aside>
       </div>
-
-      <div class="olcum-izgara" id="olcumler"></div>
-
-      <article class="kart cam">
-        <h2>Cihazlar</h2>
-        <ul class="cihaz-ozet" id="cihaz_ozet"></ul>
-      </article>
     </section>
 
     <!-- ------------------------------------------------ Cihazlar -->
@@ -117,15 +181,22 @@
       <p class="not" id="cihaz_not"></p>
     </section>
 
+    <!-- ------------------------------------------------ Uyarılar -->
+    <section class="sekme gizli" id="s_uyarilar">
+      <div class="uyari-seviyeler" id="uyari_seviyeler"></div>
+      <p class="not">Uyarılar son ölçümlerden bu sayfada hesaplanır. Optimum aralıklar genel sebze
+        serası (domates) değerleridir; danışman teyidi bekleniyor.</p>
+    </section>
+
     <!-- ------------------------------------------------ Yapay Zekâ -->
     <section class="sekme gizli" id="s_yz">
-      <article class="kart cam">
+      <article class="kart">
         <h2>Bekleyen öneriler</h2>
         <div id="oneriler" class="oneriler"></div>
         <p class="not vurgulu">Onay kayıt amaçlıdır, pompayı uzaktan çalıştırmaz.</p>
       </article>
 
-      <article class="kart cam">
+      <article class="kart">
         <h2>Tahmin vs gerçek · son 24 saat</h2>
         <div class="ozet-satir" id="yz_ozet"></div>
         <canvas id="yz_grafik" class="grafik"></canvas>
@@ -140,9 +211,26 @@
       </article>
     </section>
 
+    <!-- ------------------------------------------------ NexAI -->
+    <section class="sekme gizli" id="s_nexai">
+      <div class="nexai-izgara">
+        <div class="sohbet-yuva" id="yuva_nexai"></div>
+        <article class="kart nexai-bilgi">
+          <h2>NexAI nasıl yanıt verir?</h2>
+          <ol>
+            <li><b>Ölçüm</b> ClimaNEX ve TerraNEX'in son değerleri</li>
+            <li><b>Tahmin</b> GRU modelinin 30 dk'lık sulama olasılığı</li>
+            <li><b>Açıklama</b> NexAI ikisini birleştirip nedenini anlatır</li>
+          </ol>
+          <p class="not">Yanıtlar bu sayfanın okuduğu veriden kural tabanlı üretilir; ölçülmeyen
+            bir değer hakkında yorum yapılmaz. Tarayıcı dışına veri gönderilmez.</p>
+        </article>
+      </div>
+    </section>
+
     <!-- ------------------------------------------------ Geçmiş -->
     <section class="sekme gizli" id="s_gecmis">
-      <article class="kart cam">
+      <article class="kart">
         <div class="baslik-satir">
           <h2>Ölçümler</h2>
           <div class="secici" role="group" aria-label="Zaman aralığı">
@@ -155,7 +243,7 @@
         <p class="not">Ölçülemeyen aralıklar boş bırakılır, ara değer uydurulmaz.</p>
       </article>
 
-      <article class="kart cam">
+      <article class="kart">
         <h2>Aktivite geçmişi</h2>
         <ol class="aktivite" id="aktivite"></ol>
       </article>
@@ -163,7 +251,7 @@
 
     <!-- ------------------------------------------------ Ayarlar -->
     <section class="sekme gizli" id="s_ayarlar">
-      <article class="kart cam ayarlar">
+      <article class="kart ayarlar">
         <h2>Hesap</h2>
         <dl>
           <dt>E-posta</dt><dd id="ayar_eposta">—</dd>
@@ -173,6 +261,29 @@
       </article>
     </section>
   </div>
+
+  <!-- ------------------------------------------------ NexAI sohbet (tek düğüm) -->
+  <article class="kart sohbet" id="sohbet">
+    <header class="sohbet-baslik">
+      <span class="sohbet-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+      </span>
+      <div>
+        <h2>NexAI ile Konuş</h2>
+        <span class="soluk kucuk">Canlı veriye dayalı açıklama asistanı</span>
+      </div>
+    </header>
+    <div class="sohbet-akis" id="sohbet_akis" aria-live="polite"></div>
+    <div class="sohbet-oneriler" id="sohbet_oneriler"></div>
+    <form class="sohbet-form" id="sohbet_form" method="post" action="#">
+      <label class="gorunmez" for="sohbet_girdi">NexAI'ye soru</label>
+      <input id="sohbet_girdi" type="text" maxlength="200" autocomplete="off"
+             placeholder="Seran hakkında bir şey sor…">
+      <button type="submit" class="dugme ana gonder" aria-label="Gönder">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>
+      </button>
+    </form>
+  </article>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"
