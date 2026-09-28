@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Agricultural theme — earth tones + green accents */
+    /* Background: #F8FAF5 */
+    --background: 90 35% 97%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Primary Green #2D6A4F */
+    --primary: 152 41% 30%;
+    --primary-foreground: 0 0% 100%;
+    /* Light Green #52B788 */
+    --primary-light: 147 41% 52%;
+
+    --secondary: 90 20% 93%;
+    --secondary-foreground: 152 41% 18%;
+
+    --muted: 90 20% 94%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 147 41% 52%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Earth Brown #6B4F3A */
+    --earth: 24 30% 32%;
+    --earth-foreground: 0 0% 100%;
+
+    --border: 90 15% 88%;
+    --input: 90 15% 88%;
+    --ring: 152 41% 30%;
+
+    --radius: 0.625rem;
+
+    /* Dark marketing bands — same hue family as primary (#2D6A4F), not blue-black */
+    --marketing-surface: 152 38% 10%;
+    --marketing-raised: 152 32% 14%;
+    --marketing-inset: 152 36% 8%;
+  }
+
+  .dark {
+    --background: 150 15% 7%;
+    --foreground: 90 15% 95%;
+
+    --card: 150 15% 10%;
+    --card-foreground: 90 15% 95%;
+
+    --popover: 150 15% 10%;
+    --popover-foreground: 90 15% 95%;
+
+    --primary: 147 41% 52%;
+    --primary-foreground: 150 15% 7%;
+    --primary-light: 147 45% 62%;
+
+    --secondary: 150 10% 15%;
+    --secondary-foreground: 90 15% 95%;
+
+    --muted: 150 10% 14%;
+    --muted-foreground: 90 10% 65%;
+
+    --accent: 147 41% 52%;
+    --accent-foreground: 150 15% 7%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --earth: 24 25% 55%;
+    --earth-foreground: 150 15% 7%;
+
+    --border: 150 10% 18%;
+    --input: 150 10% 18%;
+    --ring: 147 41% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Rotating conic gradient border for premium stat panel */
+  @property --agn-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .stats-panel {
+    position: relative;
+  }
+  .agn-stat-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 38%,
+      hsl(var(--primary) / 0.14) 50%,
+      transparent 62%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    animation: agn-sheen 5.4s ease-in-out infinite;
+    animation-delay: var(--agn-delay, 0ms);
+    z-index: 0;
+  }
+  .stats-panel::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--agn-angle, 0deg),
+      hsl(var(--primary) / 0.55) 0deg,
+      hsl(var(--primary) / 0.05) 90deg,
+      hsl(var(--primary-light) / 0.55) 180deg,
+      hsl(var(--primary) / 0.05) 270deg,
+      hsl(var(--primary) / 0.55) 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: agn-spin 8s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes agn-spin {
+    to {
+      --agn-angle: 360deg;
+    }
+  }
+  @keyframes agn-sheen {
+    0%,
+    22% {
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    32% {
+      opacity: 1;
+    }
+    54% {
+      transform: translateX(120%);
+      opacity: 0.7;
+    }
+    100% {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+  }
+
+  /* Fallback: plain browsers without @property still get a soft static border */
+  @supports not (background: conic-gradient(from 0deg, red, blue)) {
+    .stats-panel::before {
+      background: linear-gradient(
+        135deg,
+        hsl(var(--primary) / 0.4),
+        hsl(var(--primary-light) / 0.4)
+      );
+      animation: none;
+    }
+  }
+
+  .agn-spark {
+    will-change: opacity, stroke-dashoffset;
+  }
+  .agn-spark-draw {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: agn-draw 1.4s ease-out forwards;
+  }
+  .agn-spark-flow {
+    opacity: 0.65;
+    stroke-dasharray: 10 8;
+    animation:
+      agn-spark-flow 1.9s linear infinite,
+      agn-spark-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes agn-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes agn-spark-flow {
+    to {
+      stroke-dashoffset: -72;
+    }
+  }
+  @keyframes agn-spark-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-0.5px);
+    }
+  }
+  .agn-stat-item {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    animation: agn-stat-in 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--agn-delay, 0ms);
+  }
+  @keyframes agn-stat-in {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .agn-value {
+    animation: agn-value-breathe 3.2s ease-in-out infinite;
+    animation-delay: var(--agn-delay, 0ms);
+    transform-origin: left center;
+  }
+  @keyframes agn-value-breathe {
+    0%,
+    100% {
+      filter: drop-shadow(0 0 0 hsl(var(--primary) / 0));
+    }
+    50% {
+      filter: drop-shadow(0 4px 10px hsl(var(--primary) / 0.28));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stats-panel::before,
+    .agn-stat-card::after,
+    .agn-spark,
+    .agn-spark-draw,
+    .agn-spark-flow,
+    .agn-stat-item,
+    .agn-value {
+      animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+}

@@ -1,0 +1,642 @@
+{
+  "common": {
+    "brand": "AgroNext",
+    "tagline": "Smart Greenhouse Management",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "comingSoon": "This feature will be available soon.",
+    "learnMore": "Learn more",
+    "getStarted": "Get Started Free",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "dashboard": "Dashboard",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "nav": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Turkey's First Youth-Led AgriTech Startup",
+      "title_start": "For Turkey's greenhouse growers,",
+      "title_italic": "smart",
+      "title_middle": "farming at an",
+      "title_highlight": "accessible",
+      "title_end": "price.",
+      "subtitle": "AI tailored to Turkey's climate, built for mid-sized greenhouse operations.",
+      "cta_demo": "Request a Demo",
+      "cta_how": "How It Works"
+    },
+    "stats": {
+      "live_badge": "Live Data",
+      "accuracy_value": "99%",
+      "accuracy_label": "Sensor Accuracy",
+      "accuracy_sub": "Calibrated GRU model",
+      "accuracy_delta": "On target",
+      "speed_value": "<2s",
+      "speed_label": "Data Refresh Rate",
+      "speed_sub": "Real-time sensor reads",
+      "speed_delta": "Realtime",
+      "water_value": "30%",
+      "water_label": "Water Savings",
+      "water_sub": "Average user data",
+      "water_delta": "Avg. pilot"
+    },
+    "partners": {
+      "section_title": "Backed by scientific foundations",
+      "coming_soon": "Coming soon",
+      "items": {
+        "gtu": "Gebze Technical University",
+        "teknofest": "TEKNOFEST Startup Program",
+        "pilots": "Pilot Greenhouses"
+      }
+    },
+    "problem": {
+      "eyebrow": "The reality of Turkish agriculture",
+      "title_a": "Growers waste",
+      "title_b": "resources every year",
+      "description": "Technology is expensive, no local solutions exist, the market is unreachable. This gap is an 800,000-hectare opportunity.",
+      "cards": {
+        "water": {
+          "value": "57%",
+          "label": "Water Wasted",
+          "description": "Annual water loss in Turkey's agriculture sector. Most of it avoidable with smart irrigation."
+        },
+        "cost": {
+          "value": "$200K+",
+          "label": "Current System Cost",
+          "description": "Installation cost of premium systems like Netafim. Out of reach for mid-scale Turkish growers."
+        },
+        "market": {
+          "value": "800K",
+          "label": "Hectares Under Cover",
+          "description": "Turkey's untapped greenhouse market. AgroNext targets this segment."
+        }
+      }
+    },
+    "product": {
+      "eyebrow": "Product",
+      "title_a": "Built for Turkey's climate,",
+      "title_b": "a smart greenhouse system",
+      "description": "Four integrated layers, a single mobile app. Install, connect, profit.",
+      "layers": {
+        "hardware": {
+          "title": "Field Hardware",
+          "short": "IoT sensors + ESP32 + solar panel",
+          "detail": "Humidity, temperature, soil-moisture and light sensors. ESP32 microcontroller operates off-grid. Setup: 4 hours."
+        },
+        "ai": {
+          "title": "AI Engine",
+          "short": "GRU-based deep learning model",
+          "detail": "GRU model trained on Turkish climate data. Target prediction accuracy: 94%+."
+        },
+        "cloud": {
+          "title": "Cloud Infrastructure",
+          "short": "Real-time data processing + API",
+          "detail": "Neon Postgres, Vercel serverless and event-driven processing. Low cost, scalable."
+        },
+        "app": {
+          "title": "Mobile App",
+          "short": "Remote management + one-tap control",
+          "detail": "AI alerts, scenario-based automation and one-tap action buttons."
+        }
+      },
+      "live_pill": "Live",
+      "phone": {
+        "greeting": "Hello,",
+        "user": "Mr. Ahmet",
+        "live": "• Live",
+        "alert": "AI Alert: Soil moisture in Greenhouse 2 is approaching critical level. Irrigation recommended.",
+        "humidity": "Air Humidity",
+        "temperature": "Temperature",
+        "soil": "Soil Moisture",
+        "savings": "Water Savings",
+        "weeklyTitle": "This Week's Irrigation Efficiency",
+        "model": "GRU Model",
+        "accuracyLabel": "Prediction Accuracy",
+        "cta": "Start Irrigation",
+        "badge": "41% Water Saved",
+        "hardware": {
+          "title": "Field Hardware",
+          "subtitle": "Live Sensor Map",
+          "sensorsLabel": "Active Sensors",
+          "sensors": [
+            { "name": "Greenhouse 1 · North", "status": "v3.2 · 4h" },
+            { "name": "Greenhouse 2 · Center", "status": "v3.2 · 4h" },
+            { "name": "Greenhouse 3 · South", "status": "v3.2 · 4h" }
+          ],
+          "batteryLabel": "Battery",
+          "radioLabel": "LoRa 868",
+          "solarLabel": "Solar"
+        },
+        "ai": {
+          "title": "Artificial Intelligence",
+          "subtitle": "GRU-based Prediction",
+          "layersLabel": "Architecture",
+          "epochsLabel": "Epoch",
+          "accuracyLabel": "Accuracy",
+          "confusionLabel": "Confusion Matrix (%)"
+        },
+        "cloud": {
+          "title": "Cloud",
+          "subtitle": "Real-time Data Flow",
+          "sourcesLabel": "Sources → API → DB",
+          "sources": ["GH 1", "GH 2", "GH 3"],
+          "endpoint": "/api/iot/ingest",
+          "latencyLabel": "p95 Latency",
+          "dbLabel": "Database",
+          "uptimeLabel": "Uptime"
+        }
+      }
+    },
+    "tech": {
+      "eyebrow": "Architecture",
+      "section_title": "How It Works",
+      "section_sub": "Four-layer, modular system architecture",
+      "layers": {
+        "one": {
+          "title": "Field Hardware",
+          "subtitle": "Edge Layer",
+          "description": "ESP32-based sensor network measuring soil moisture, temperature, humidity, light and CO₂. Solar-powered and grid-independent.",
+          "tags": ["ESP32", "Wi-Fi / GSM", "Solar Powered"]
+        },
+        "two": {
+          "title": "Artificial Intelligence",
+          "subtitle": "GRU Model",
+          "description": "GRU-based deep learning model processing time-series data. Unlike threshold systems, it generates proactive predictions.",
+          "tags": ["GRU / Deep Learning", "GTU Data Partnership", "Turkey-Tuned"]
+        },
+        "three": {
+          "title": "Cloud Infrastructure",
+          "subtitle": "Cloud Layer",
+          "description": "Sensor data, AI inferences and notifications processed on open-source cloud infrastructure. Low cost, high scalability.",
+          "tags": ["Open Source", "Real-time", "Secure"]
+        },
+        "four": {
+          "title": "User Application",
+          "subtitle": "Mobile & Web",
+          "description": "Growers remotely monitor and control the greenhouse via mobile and web, receiving instant alerts on critical thresholds.",
+          "tags": ["Mobile App", "Web Dashboard", "Push Alerts"]
+        }
+      }
+    },
+    "compare": {
+      "eyebrow": "Competitive edge",
+      "section_title": "What Sets Us Apart",
+      "section_sub": "See how we compare to global systems",
+      "feature_col": "Feature",
+      "us_badge": "Us",
+      "ourPrice": "One-tenth",
+      "features": {
+        "price": "Accessible pricing",
+        "localAI": "Proactive AI (GRU-based)",
+        "turkeyData": "Turkey-tuned model",
+        "mobile": "Mobile app",
+        "subscription": "Subscription model"
+      }
+    },
+    "roadmap": {
+      "eyebrow": "Roadmap",
+      "title_a": "The road to",
+      "title_b": "commercialization",
+      "status_active": "In progress",
+      "status_upcoming": "Upcoming",
+      "status_future": "Future",
+      "quarters": {
+        "q1": {
+          "label": "Q1 2025",
+          "title": "Prototype & AI Model",
+          "items": ["Working hardware prototype", "First GRU model training", "Mobile app beta"]
+        },
+        "q2": {
+          "label": "Q2 2025",
+          "title": "Pilot Greenhouses",
+          "items": ["1–2 pilot greenhouse deployments", "GTU data partnership protocol", "Cloud infrastructure scaling"]
+        },
+        "q3": {
+          "label": "Q3–Q4 2025",
+          "title": "Commercialization",
+          "items": ["3–5 paying customers", "Incorporation", "TÜBİTAK BiGG application"]
+        },
+        "q4": {
+          "label": "2026",
+          "title": "Regional Growth",
+          "items": ["Mediterranean belt expansion", "Seed funding round", "Team scale-up"]
+        }
+      }
+    },
+    "demo": {
+      "eyebrow": "Contact",
+      "title_a": "Let's take your greenhouse",
+      "title_b": "into the future",
+      "description": "Request a demo. We'll tailor the system to your greenhouse.",
+      "email": "agronextstartup@agronext.net",
+      "form": {
+        "name": "Full Name",
+        "namePlaceholder": "Ahmet Yılmaz",
+        "phone": "Phone",
+        "phonePlaceholder": "+90 5xx xxx xxxx",
+        "email": "Email",
+        "emailPlaceholder": "example@mail.com",
+        "size": "Greenhouse Size",
+        "sizePlaceholder": "Select",
+        "sizeOptions": {
+          "small": "0 - 500 m²",
+          "medium": "500 - 2,000 m²",
+          "large": "2,000 - 10,000 m²",
+          "xlarge": "10,000 m²+"
+        },
+        "location": "Location (City)",
+        "locationPlaceholder": "Antalya",
+        "message": "Your message (optional)",
+        "messagePlaceholder": "Brief info about your greenhouse...",
+        "submit": "Request a Demo",
+        "submitting": "Sending...",
+        "success": "Thanks! We'll get back to you shortly.",
+        "error": "Something went wrong, please try again."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Pick the right plan",
+    "subtitle": "Start with a small greenhouse and scale all the way to enterprise.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyBadge": "20% off",
+    "popular": "Most Popular",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "free": "Free",
+    "contactForPrice": "Contact us for pricing",
+    "contactForPriceHint": "We'll prepare a custom quote — usually within minutes.",
+    "aiHelper": {
+      "title": "Help picking a plan",
+      "subtitle": "Let the AgroNext assistant suggest the best plan for you.",
+      "placeholder": "Ask something... (e.g. which plan fits a 500m² greenhouse?)",
+      "send": "Send",
+      "dormantMessage": "This feature will be available soon. You're using a demo version for now.",
+      "open": "AI Assistant"
+    },
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "description": "For small operations with 1–2 greenhouses",
+        "tagline": "For small operations with 1–2 greenhouses"
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For growing commercial greenhouse businesses",
+        "tagline": "For growing commercial greenhouse businesses"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "For large-scale greenhouse complexes",
+        "tagline": "For large-scale greenhouse complexes"
+      }
+    },
+    "cta": {
+      "demo": "Request a Demo",
+      "quote": "Get a Quote"
+    },
+    "compare": {
+      "eyebrow": "Comparison",
+      "title_a": "A clear gap",
+      "title_b": "vs. other systems",
+      "columns": {
+        "criterion": "Criterion",
+        "agronext": "AgroNext",
+        "netafim": "Netafim",
+        "priva": "Priva",
+        "manual": "Manual Farming"
+      },
+      "rows": {
+        "cost": {
+          "label": "Setup Cost",
+          "agronext": "~$5,000–20,000",
+          "netafim": "$50,000–200,000",
+          "priva": "$80,000–300,000",
+          "manual": "Low (labor-heavy)"
+        },
+        "ai": {
+          "label": "Turkey-tuned AI",
+          "agronext": "Yes",
+          "netafim": "",
+          "priva": "",
+          "manual": ""
+        },
+        "setup": {
+          "label": "Install Time",
+          "agronext": "4 hours",
+          "netafim": "Weeks",
+          "priva": "Weeks",
+          "manual": "—"
+        },
+        "solar": {
+          "label": "Solar Power",
+          "agronext": "Included",
+          "netafim": "Extra",
+          "priva": "Extra",
+          "manual": ""
+        },
+        "mobile": {
+          "label": "Mobile App",
+          "agronext": "Full control",
+          "netafim": "Limited",
+          "priva": "Limited",
+          "manual": ""
+        },
+        "scale": {
+          "label": "Scalability",
+          "agronext": "Modular",
+          "netafim": "Yes",
+          "priva": "Yes",
+          "manual": ""
+        },
+        "segment": {
+          "label": "Mid-scale Segment",
+          "agronext": "Focus",
+          "netafim": "Enterprise",
+          "priva": "Enterprise",
+          "manual": "—"
+        }
+      }
+    }
+  },
+  "about": {
+    "title": "Who we are",
+    "subtitle": "Founded to make technology accessible to every Turkish grower.",
+    "mission": {
+      "title": "Why AgroNext?",
+      "lead": "Mid-sized greenhouse operations in Turkey can't access digital agriculture technology because of the high cost of smart greenhouse systems like Netafim.",
+      "problem": {
+        "title": "The problem",
+        "items": {
+          "one": {
+            "stat": "$200K+",
+            "label": "Setup cost — out of reach for mid-scale growers."
+          },
+          "two": {
+            "stat": "57%",
+            "label": "Annual water waste — preventable, yet unprevented."
+          }
+        }
+      },
+      "solution": {
+        "title": "Our solution",
+        "body": "AgroNext delivers a GRU-based AI tuned for Turkey's climate, a solar-powered sensor network and a subscription model — offering an accessible smart greenhouse system at one-tenth the price of global rivals.\n\nUnlike threshold-based systems, it generates proactive predictions: growers see irrigation, ventilation and fertilization needs ahead of time, cutting resource waste."
+      }
+    },
+    "story": {
+      "title": "Our story",
+      "paragraphs": [
+        "AgroNext was born from the shared idea of three high-school students and an academic. Seeing firsthand the technology gap for Turkish growers, the team set out to build a local, accessible alternative to global rivals.",
+        "The venture is developed with the academic guidance of Gebze Technical University. Training the AI model on Turkish climate data and shaping field-testing methodology both happen through this university partnership.",
+        "From hardware to AI, from cloud infrastructure to the mobile app — every layer is built in-house, from scratch. The goal: lead the digital transformation of Turkey's 50,000+ mid-scale greenhouses through a path that is truly attainable.",
+        "Today we're at the MVP stage, moving towards our first pilot greenhouses and commercialization."
+      ]
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Smart agriculture, greenhouse management, and news from AgroNext.",
+    "readMore": "Read more",
+    "publishedOn": "Published on",
+    "backToList": "All posts",
+    "empty": "No posts published yet."
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Reach out with your questions and we'll get back to you quickly.",
+    "team_title": "Our Team",
+    "team_subtitle": "The people building AgroNext.",
+    "team_linkedin": "LinkedIn",
+    "advisor_title": "Academic Advisor",
+    "advisor_badge": "Academic Advisor",
+    "company": {
+      "title": "Get in Touch",
+      "email_label": "Email",
+      "phone_label": "Phone",
+      "location_label": "Location",
+      "website_label": "Website"
+    },
+    "form": {
+      "name": "Your name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Your message",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "success": "Your message has been sent. Thank you!",
+      "error": "Something went wrong, please try again."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "subtitle": "Continue with email and password or with Google.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "google": "Continue with Google",
+      "forgot": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up",
+      "error": "Invalid email or password.",
+      "or": "or"
+    },
+    "register": {
+      "title": "Create a free account",
+      "subtitle": "Start using AgroNext in minutes.",
+      "name": "Your name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create Account",
+      "submitting": "Creating...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "error": "Something went wrong during registration.",
+      "emailInUse": "This email is already in use."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "We'll send a reset link to your email.",
+      "email": "Email",
+      "submit": "Send reset link",
+      "success": "Check your email inbox.",
+      "backToLogin": "Back to sign in"
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "overview": "Overview",
+      "greenhouse": "Greenhouses",
+      "blog": "Blog Admin",
+      "settings": "Settings"
+    },
+    "overview": {
+      "title": "Overview",
+      "welcome": "Welcome back",
+      "stats": {
+        "activeGreenhouses": "Active Greenhouses",
+        "temperature": "Latest Temperature",
+        "humidity": "Latest Humidity",
+        "soilMoisture": "Soil Moisture"
+      },
+      "chartTitle": "Last 7 Days — Temperature & Humidity",
+      "recentReadings": "Recent Sensor Readings",
+      "noData": "No data yet. Add a greenhouse to get started.",
+      "temperatureLabel": "Temperature (°C)",
+      "humidityLabel": "Humidity (%)",
+      "table": {
+        "greenhouse": "Greenhouse",
+        "temperature": "Temp.",
+        "humidity": "Humidity",
+        "soil": "Soil",
+        "light": "Light",
+        "co2": "CO2",
+        "time": "Time"
+      }
+    },
+    "greenhouse": {
+      "title": "My Greenhouses",
+      "empty": "You don't have any greenhouses yet.",
+      "location": "Location",
+      "area": "Area",
+      "createdAt": "Created",
+      "viewReadings": "View Readings",
+      "historyTitle": "Sensor Reading History",
+      "backToList": "Back to list"
+    },
+    "blog": {
+      "title": "Blog Admin",
+      "newPost": "New Post",
+      "editPost": "Edit Post",
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "status": "Status",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "form": {
+        "slug": "Slug (URL)",
+        "coverImage": "Cover image URL",
+        "titleTr": "Title (TR)",
+        "titleEn": "Title (EN)",
+        "excerptTr": "Excerpt (TR)",
+        "excerptEn": "Excerpt (EN)",
+        "bodyTr": "Body (TR)",
+        "bodyEn": "Body (EN)",
+        "published": "Publish"
+      },
+      "empty": "No posts yet.",
+      "confirmDelete": "Are you sure you want to delete this post?",
+      "onlyAdmin": "Only administrators can access this page."
+    },
+    "settings": {
+      "title": "Account Settings",
+      "profile": {
+        "title": "Profile",
+        "name": "Your name",
+        "email": "Email",
+        "emailLocked": "Email cannot be changed.",
+        "save": "Save",
+        "success": "Your profile was updated."
+      },
+      "password": {
+        "title": "Change Password",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "save": "Update Password",
+        "success": "Your password has been updated.",
+        "oauthOnly": "You're signed in with Google, so password change does not apply."
+      }
+    }
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "unauthorized": "Unauthorized",
+    "forbidden": "You don't have permission",
+    "notFound": "Not found",
+    "validation": "Invalid data",
+    "serverError": "Server error"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms of Service",
+    "contact_heading": "Contact",
+    "disclaimer": "Developed with academic advisory support from Gebze Technical University."
+  },
+  "seo": {
+    "default": {
+      "title": "AgroNext — Turkey's Smart Greenhouse Platform",
+      "description": "Greenhouse automation powered by a GRU-based AI. One-tenth the price of Netafim, tuned for Turkey's climate.",
+      "og_title": "AgroNext",
+      "og_description": "Accessible smart farming for Turkish growers."
+    },
+    "home": {
+      "title": "Turkey's Smart Greenhouse Platform",
+      "description": "Greenhouse automation with AI tuned for Turkey's climate. Accessible pricing, proactive decisions.",
+      "og_title": "AgroNext — Smart Greenhouse",
+      "og_description": "GRU-based AI + IoT sensors + mobile app. All in one package."
+    },
+    "pricing": {
+      "title": "Pricing",
+      "description": "From small greenhouses to enterprise: pick the AgroNext plan that fits you.",
+      "og_title": "AgroNext Pricing",
+      "og_description": "Starter, Pro and Enterprise plans."
+    },
+    "about": {
+      "title": "About",
+      "description": "The AgroNext team, mission and story.",
+      "og_title": "About AgroNext",
+      "og_description": "Three high-school students and one academic. Technology for Turkey's greenhouse growers."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Get in touch with AgroNext — for demo requests, quotes and general questions.",
+      "og_title": "AgroNext Contact",
+      "og_description": "Reach us via email, phone or the contact form."
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "AgroNext privacy policy.",
+      "body": "The detailed text of our privacy policy will be published soon. For questions, contact us at agronextstartup@agronext.net."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "AgroNext service terms of use.",
+      "body": "The detailed text of our terms of service will be published soon. For questions, contact us at agronextstartup@agronext.net."
+    }
+  }
+}
