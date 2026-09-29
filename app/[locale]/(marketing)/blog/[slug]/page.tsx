@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
-export const revalidate = 1800
+// İstek anında çalışır: build veritabanına bağlanmaya çalışmaz.
+export const dynamic = "force-dynamic"
 
 interface PageProps {
   params: { locale: string; slug: string }
@@ -21,10 +22,12 @@ export default async function BlogPostPage({
   setRequestLocale(locale)
   const t = await getTranslations("blog")
 
-  const post = await db.query.blogPosts.findFirst({
-    where: and(eq(blogPosts.slug, slug), eq(blogPosts.published, true)),
-    with: { author: true },
-  })
+  const post = await db.query.blogPosts
+    .findFirst({
+      where: and(eq(blogPosts.slug, slug), eq(blogPosts.published, true)),
+      with: { author: true },
+    })
+    .catch(() => undefined)
 
   if (!post) notFound()
 

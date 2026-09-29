@@ -7,7 +7,8 @@ import { Link } from "@/lib/i18n/routing"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDate } from "@/lib/utils"
 
-export const revalidate = 1800
+// İstek anında çalışır: build veritabanına bağlanmaya çalışmaz.
+export const dynamic = "force-dynamic"
 
 interface PageProps {
   params: { locale: string }
@@ -17,11 +18,17 @@ export default async function BlogPage({ params: { locale } }: PageProps) {
   setRequestLocale(locale)
   const t = await getTranslations("blog")
 
-  const posts = await db.query.blogPosts.findMany({
-    where: eq(blogPosts.published, true),
-    orderBy: [desc(blogPosts.createdAt)],
-    with: { author: true },
-  })
+  // Veritabanına ulaşılamazsa sayfa düşmez, "henüz yazı yok" görünür.
+  const posts = await db.query.blogPosts
+    .findMany({
+      where: eq(blogPosts.published, true),
+      orderBy: [desc(blogPosts.createdAt)],
+      with: { author: true },
+    })
+    .catch((err) => {
+      console.error("Blog yazıları okunamadı:", err)
+      return []
+    })
 
   return (
     <div className="container py-16 md:py-24">
