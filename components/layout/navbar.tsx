@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { useSession } from "next-auth/react"
 import { Link, usePathname, useRouter } from "@/lib/i18n/routing"
 import { Logo } from "./logo"
 
@@ -12,7 +11,6 @@ import { Logo } from "./logo"
 export function Navbar() {
   const locale = useLocale() as "tr" | "en"
   const t = useTranslations()
-  const { data: session } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
@@ -43,9 +41,8 @@ export function Navbar() {
           <button type="button" className="s-nav-lang" onClick={switchLocale} aria-label={tr ? "Switch to English" : "Türkçeye geç"}>
             <span data-on={tr}>TR</span><span aria-hidden="true">/</span><span data-on={!tr}>EN</span>
           </button>
-          {session?.user
-            ? <Link className="s-nav-sign" href="/dashboard">{t("common.dashboard")}</Link>
-            : <Link className="s-nav-sign" href="/auth/login">{t("common.signIn")}</Link>}
+          {/* Giriş, sera paneline (Supabase oturumu) gider; sitenin eski dashboard'u kullanılmıyor. */}
+          <a className="s-nav-sign" href="/panel">{t("common.signIn")}</a>
         </div>
         <button className="s-nav-toggle" type="button" aria-expanded={open} aria-controls="s-mobile-menu" onClick={() => setOpen(!open)}>
           <span className="s-visually-hidden">{open ? (tr ? "Menüyü kapat" : "Close menu") : (tr ? "Menüyü aç" : "Open menu")}</span>
@@ -65,9 +62,7 @@ export function Navbar() {
               <Link href="/about" onClick={() => setOpen(false)}>{t("nav.about")}</Link>
               <Link href="/blog" onClick={() => setOpen(false)}>{t("nav.blog")}</Link>
               <Link href="/contact" onClick={() => setOpen(false)}>{t("nav.contact")}</Link>
-              {session?.user
-                ? <Link href="/dashboard" onClick={() => setOpen(false)}>{t("common.dashboard")}</Link>
-                : <Link href="/auth/login" onClick={() => setOpen(false)}>{t("common.signIn")}</Link>}
+              <a href="/panel">{t("common.signIn")}</a>
               <button type="button" onClick={() => { setOpen(false); switchLocale() }}>{tr ? "English" : "Türkçe"}</button>
             </div>
           </nav>

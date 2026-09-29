@@ -22,6 +22,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Sitenin eski dashboard ana sayfası yerine sera paneli: giriş sonrası (callbackUrl
+  // varsayılanı /dashboard) kullanıcı panele düşer. /dashboard/blog gibi alt sayfalar
+  // (blog yönetimi) olduğu gibi kalır.
+  if (/^\/(tr|en)\/dashboard\/?$/.test(pathname)) {
+    return NextResponse.redirect(new URL("/panel", request.url))
+  }
+
   // Static and internal assets handled upstream via matcher
 
   const isDashboard = DASHBOARD_REGEX.test(pathname)
