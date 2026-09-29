@@ -42,7 +42,7 @@ export default function AboutPage({ params: { locale } }: { params: { locale: st
           <div><dt>{tr ? "Konum" : "Location"}</dt><dd>Gebze, Kocaeli</dd></div>
           <div><dt>TEKNOFEST 2026</dt><dd>{tr ? "Tarım Teknolojileri · Tam Otonom Sera Sistemleri finalisti" : "Agricultural Technologies · Fully Autonomous Greenhouse Systems finalist"}</dd></div>
           <div><dt>{tr ? "Sistem" : "System"}</dt><dd>ClimaNex · TerraNex · {tr ? "yerel AI" : "local AI"} · NexAI</dd></div>
-          <div><dt>{tr ? "İletişim" : "Contact"}</dt><dd><a href="mailto:agronextstartup@agronext.net">agronextstartup@agronext.net</a></dd></div>
+          <div><dt>{tr ? "İletişim" : "Contact"}</dt><dd><a href="mailto:agronext.contact@gmail.com">agronext.contact@gmail.com</a></dd></div>
         </dl>
       </section>
     </div>

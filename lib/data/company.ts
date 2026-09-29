@@ -2,7 +2,7 @@ export const companyInfo = {
   name: "AgroNext",
   website: "agronext.net",
   websiteUrl: "https://agronext.net",
-  email: "agronextstartup@agronext.net",
+  email: "agronext.contact@gmail.com",
   phone: "+90 551 835 69 12",
   phoneHref: "+905518356912",
   location: "Gebze, Kocaeli, Türkiye",
