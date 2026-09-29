@@ -119,7 +119,7 @@ export const detailContent: Record<DetailSlug, Detail> = {
       "NexAI web ve mobil uygulamadaki dil modeli katmanıdır. Seranla ilgili soruları ölçüm geçmişi, karar kayıtları ve komut geçmişiyle yanıtlar; her yanıtta dayandığı veriyi gösterir.",
       "NexAI is the language-model layer in the web and mobile app. It answers questions about your greenhouse using measurement history, decision records and command history, and shows the data behind every answer.",
     ),
-    image: { src: "/agronext/panel-genel-bakis.jpg", w: 1600, h: 787, alt: L("Sera panelinde AI Karar Özeti ve NexAI sohbet alanı", "AI Decision Summary and NexAI chat in the greenhouse panel"), caption: L("Sera paneli v3 · sağda AI Karar Özeti ve NexAI.", "Greenhouse panel v3 · AI Decision Summary and NexAI on the right.") },
+    image: { src: "/agronext/panel-genel-bakis.png", w: 1600, h: 780, alt: L("Sera panelinde AI Karar Özeti ve NexAI sohbet alanı", "AI Decision Summary and NexAI chat in the greenhouse panel"), caption: L("Sera paneli v3 · sağda AI Karar Özeti ve NexAI.", "Greenhouse panel v3 · AI Decision Summary and NexAI on the right.") },
     specs: [
       { k: L("Çalıştığı yer", "Runs in"), v: L("web ve mobil uygulama", "web and mobile app") },
       { k: L("Kaynak", "Sources"), v: L("güncel ölçüm · geçmiş · karar ve komut kayıtları", "current readings · history · decision and command logs") },

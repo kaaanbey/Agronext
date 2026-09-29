@@ -13,7 +13,7 @@ const copy = {
     access: "Panel girişlidir. Her kullanıcı yalnız kendi serasını görür; yetki veritabanında, satır düzeyinde denetlenir.",
     cta: "Sera paneline git",
     alt: "AgroNext sera panelinin genel bakış ekranı: soldaki menü, hava sıcaklığı, bağıl nem, CO₂, gaz direnci ve hava basıncı kartları ile küçük eğilim grafikleri, sağda AI Karar Özeti ve NexAI sohbet alanı",
-    cap: "Sera paneli v3, genel bakış. Gerçek ekran görüntüsü.",
+    cap: "Sera paneli v3, genel bakış.",
   },
   en: {
     label: "Greenhouse panel",
@@ -26,16 +26,16 @@ const copy = {
     access: "The panel requires sign-in. Each user sees only their own greenhouse; access is enforced in the database, row by row.",
     cta: "Open the greenhouse panel",
     alt: "Overview screen of the AgroNext greenhouse panel: navigation on the left, cards for air temperature, relative humidity, CO₂, gas resistance and air pressure with small trend charts, AI Decision Summary and NexAI chat on the right",
-    cap: "Greenhouse panel v3, overview. Actual screenshot (Turkish UI).",
+    cap: "Greenhouse panel v3, overview (Turkish UI).",
   },
 }
 
-// Görüntünün üstteki 118 px'i (panelin kendi "fotoğraf buraya gelecek" alanı) CSS ile
-// kırpılır; işaret konumları kırpılmış çerçeveye göredir.
+// İşaret konumları ekran görüntüsünün kendi koordinatlarıdır (%):
+// 1 canlı ölçüm kartları, 2 AI Karar Özeti, 3 uyarılar.
 const PINS = [
-  { n: 1, x: 45, y: 34 },
-  { n: 2, x: 85.5, y: 22 },
-  { n: 3, x: 45, y: 92 },
+  { n: 1, x: 45, y: 42 },
+  { n: 2, x: 92, y: 14 },
+  { n: 3, x: 45, y: 88 },
 ]
 
 export function Dashboard({ locale }: { locale: L }) {
@@ -59,7 +59,7 @@ export function Dashboard({ locale }: { locale: L }) {
         </div>
         <figure className="s-dash-shot" data-reveal>
           <div className="s-dash-frame">
-            <Image src="/agronext/panel-genel-bakis.jpg" alt={t.alt} fill sizes="(max-width: 900px) 100vw, 72vw" />
+            <Image src="/agronext/panel-genel-bakis.png" alt={t.alt} fill sizes="(max-width: 900px) 100vw, 72vw" />
             {PINS.map((p) => (
               <span key={p.n} className="s-photo-pin" style={{ left: `${p.x}%`, top: `${p.y}%` }} aria-hidden="true">{p.n}</span>
             ))}
