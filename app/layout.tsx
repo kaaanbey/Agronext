@@ -1,66 +1,43 @@
 import type { Metadata } from "next"
-import { Inter, Instrument_Serif } from "next/font/google"
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
+import "./site.css"
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-})
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-serif",
-})
+// Üç aile, üç görev: Inter gövde metni, Inter Tight başlıklar,
+// JetBrains Mono ölçüm değerleri / etiketler / teknik tablolar.
+const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-inter" })
+const interTight = Inter_Tight({ subsets: ["latin", "latin-ext"], weight: ["500", "600", "700"], display: "swap", variable: "--font-display" })
+const mono = JetBrains_Mono({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"], display: "swap", variable: "--font-mono" })
 
 export const metadata: Metadata = {
   title: {
-    default: "AgroNext — Türkiye'nin Akıllı Sera Platformu",
+    default: "AgroNext · Sensörden karara, karardan uygulamaya",
     template: "%s · AgroNext",
   },
   description:
-    "GRU tabanlı yapay zekâ ile sera otomasyonu. Netafim'in onda biri fiyatında, Türkiye iklimine özel.",
-  keywords: [
-    "akıllı sera",
-    "sera otomasyonu",
-    "agritech",
-    "yapay zeka tarım",
-    "smart greenhouse",
-    "Turkey agtech",
-    "AgroNext",
-  ],
-  metadataBase: new URL(process.env.AUTH_URL ?? "http://localhost:3000"),
+    "AgroNext; ClimaNex ve TerraNex modülleriyle sera iklimini ve kök bölgesini ölçen, yerel yapay zekâ ile sulama, gübreleme, ısıtma ve havalandırma kararı üreten ve bu kararları sera ekipmanına uygulayan sera otomasyon sistemidir.",
+  keywords: ["akıllı sera", "sera otomasyonu", "yerel yapay zekâ", "edge AI", "IoT", "ClimaNex", "TerraNex", "AgroNext"],
+  metadataBase: new URL("https://agronext.net"),
   openGraph: {
     title: "AgroNext",
-    description: "Türkiye seracıları için erişilebilir akıllı tarım.",
+    description: "Sensörden karara, karardan uygulamaya. Sera için ölçüm, yerel yapay zekâ ve kontrol.",
     url: "https://agronext.net",
     siteName: "AgroNext",
     locale: "tr_TR",
     type: "website",
+    images: ["/agronext/sera-prototip.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "AgroNext",
-    description: "Akıllı sera, erişilebilir fiyat.",
+    description: "Sensörden karara, karardan uygulamaya.",
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      suppressHydrationWarning
-      className={`${inter.variable} ${instrumentSerif.variable}`}
-    >
-      <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
-      </body>
+    <html suppressHydrationWarning className={`${inter.variable} ${interTight.variable} ${mono.variable}`}>
+      <body className="min-h-screen bg-background font-sans antialiased">{children}</body>
     </html>
   )
 }

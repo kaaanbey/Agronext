@@ -1,134 +1,49 @@
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import { useTranslations } from "next-intl"
-import { AlertTriangle, TrendingDown, Sparkles } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { FadeInSection } from "@/components/landing/motion-section"
-import { TeamSection } from "@/components/contact/team-section"
+import Image from "next/image"
+import { setRequestLocale } from "next-intl/server"
 
-interface PageProps {
-  params: { locale: string }
-}
-
-export async function generateMetadata({ params: { locale } }: PageProps) {
-  const t = await getTranslations({ locale, namespace: "seo.about" })
+export function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+  const tr = locale === "tr"
   return {
-    title: t("title"),
-    description: t("description"),
-    openGraph: {
-      title: t("og_title"),
-      description: t("og_description"),
-    },
+    title: tr ? "Proje ve ekip" : "Project and team",
+    description: tr ? "AgroNext'i geliştiren ekip ve projenin sahadaki durumu." : "The team building AgroNext and where the project stands in the field.",
   }
 }
 
-export default function AboutPage({ params: { locale } }: PageProps) {
+const TEAM = ["Tuna Özkan Yapıcı", "Yusuf Mete Akınlı", "Ali Kaan Kaya", "Batuhan Melik Gültekin"]
+
+export default function AboutPage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale)
-  const t = useTranslations("about")
-
-  const problemItems = [
-    {
-      key: "one",
-      icon: AlertTriangle,
-      stat: t("mission.problem.items.one.stat"),
-      label: t("mission.problem.items.one.label"),
-    },
-    {
-      key: "two",
-      icon: TrendingDown,
-      stat: t("mission.problem.items.two.stat"),
-      label: t("mission.problem.items.two.label"),
-    },
-  ]
-
-  const storyParagraphs: string[] = t.raw("story.paragraphs") as string[]
-
+  const tr = locale === "tr"
   return (
-    <div className="container py-16 md:py-24">
-      <FadeInSection className="max-w-2xl mx-auto text-center">
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
-          {t("title")}
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">{t("subtitle")}</p>
-      </FadeInSection>
-
-      <section className="mt-20">
-        <FadeInSection className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-            {t("mission.title")}
-          </h2>
-          <p className="mt-4 text-muted-foreground leading-relaxed">
-            {t("mission.lead")}
-          </p>
-        </FadeInSection>
-
-        <div className="mt-12 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
-          <FadeInSection>
-            <Card className="h-full">
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold text-earth mb-4">
-                  {t("mission.problem.title")}
-                </h3>
-                <div className="space-y-4">
-                  {problemItems.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <div
-                        key={item.key}
-                        className="flex items-start gap-3 rounded-md bg-muted/40 p-4"
-                      >
-                        <div className="h-9 w-9 shrink-0 rounded-md bg-destructive/10 text-destructive flex items-center justify-center">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <div className="text-xl font-semibold tracking-tight">
-                            {item.stat}
-                          </div>
-                          <div className="text-sm text-muted-foreground mt-0.5">
-                            {item.label}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </FadeInSection>
-          <FadeInSection delay={0.1}>
-            <Card className="h-full border-primary/40 bg-primary/5">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-9 w-9 rounded-md bg-primary/15 text-primary flex items-center justify-center">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-earth">
-                    {t("mission.solution.title")}
-                  </h3>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {t("mission.solution.body")}
-                </p>
-              </CardContent>
-            </Card>
-          </FadeInSection>
+    <div className="s-site s-info">
+      <header className="s-wrap s-info-head">
+        <p className="s-label">{tr ? "Proje ve ekip" : "Project and team"}</p>
+        <h1 className="s-doc-title">{tr ? "Serada geliştirilen bir sistem." : "A system built in the greenhouse."}</h1>
+        <p className="s-doc-lead">
+          {tr
+            ? "AgroNext; sensör donanımı, gömülü yazılım, yerel yapay zekâ ve kullanıcı uygulamasını aynı ekipte geliştiren bir tarım teknolojisi girişimidir. Sistem bir biber serasında kuruldu ve orada geliştirilmeye devam ediyor."
+            : "AgroNext is an agritech startup that builds sensor hardware, embedded firmware, local AI and the user app within one team. The system was installed in a pepper greenhouse and continues to be developed there."}
+        </p>
+      </header>
+      <figure className="s-info-photo">
+        <div className="s-info-frame">
+          <Image src="/agronext/sera-prototip.jpg" alt={tr ? "AgroNext'in sera içindeki saha kurulumu" : "AgroNext field setup inside the greenhouse"} fill priority sizes="100vw" />
         </div>
-      </section>
-
-      <section className="mt-24">
-        <FadeInSection className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-center">
-            {t("story.title")}
-          </h2>
-          <div className="mt-8 space-y-5 text-lg leading-relaxed text-foreground/90">
-            {storyParagraphs.map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </FadeInSection>
-      </section>
-
-      <section className="mt-24">
-        <TeamSection />
+        <figcaption className="s-wrap">{tr ? "Saha kurulumu, biber serası." : "Field setup, pepper greenhouse."}</figcaption>
+      </figure>
+      <section className="s-wrap s-info-grid">
+        <div>
+          <p className="s-label">{tr ? "Ekip" : "Team"}</p>
+          <ul className="s-team">
+            {TEAM.map((name) => <li key={name}>{name}</li>)}
+          </ul>
+        </div>
+        <dl className="s-notes">
+          <div><dt>{tr ? "Konum" : "Location"}</dt><dd>Gebze, Kocaeli</dd></div>
+          <div><dt>TEKNOFEST 2026</dt><dd>{tr ? "Tarım Teknolojileri · Tam Otonom Sera Sistemleri finalisti" : "Agricultural Technologies · Fully Autonomous Greenhouse Systems finalist"}</dd></div>
+          <div><dt>{tr ? "Sistem" : "System"}</dt><dd>ClimaNex · TerraNex · {tr ? "yerel AI" : "local AI"} · NexAI</dd></div>
+          <div><dt>{tr ? "İletişim" : "Contact"}</dt><dd><a href="mailto:agronextstartup@agronext.net">agronextstartup@agronext.net</a></dd></div>
+        </dl>
       </section>
     </div>
   )

@@ -1,5 +1,9 @@
 import { cn } from "@/lib/utils"
 
+// Logo işareti PNG yerine SVG olarak çizildi: her boyutta keskin, koyu zeminde de
+// çalışıyor ve beyaz kutu bırakmıyor. Şekiller agronext-logo.png'deki işaretten
+// (iki eğik yaprak + üçgen) ölçülerek alındı; renkler logodakiyle aynı.
+
 interface LogoProps {
   className?: string
   showWordmark?: boolean
@@ -7,62 +11,24 @@ interface LogoProps {
 
 export function Logo({ className, showWordmark = true }: LogoProps) {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <LogoMark className="h-8 w-8" />
+    <span className={cn("s-brand", className)}>
+      <LogoMark />
       {showWordmark ? (
-        <span className="font-extrabold tracking-tight text-lg">
-          Agro<span className="text-primary">Next</span>
+        <span className="s-brand-word" aria-hidden="true">
+          <span className="s-brand-agro">AGRO</span>
+          <span className="s-brand-next">NEXT</span>
         </span>
       ) : null}
-    </div>
+    </span>
   )
 }
 
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 40 40"
-      fill="none"
-      aria-hidden="true"
-      className={cn("h-8 w-8", className)}
-    >
-      <rect width="40" height="40" rx="10" className="fill-primary" />
-      <path
-        d="M20 30 C20 30 10 24 10 16 C10 11 14.5 8 20 8 C25.5 8 30 11 30 16 C30 24 20 30 20 30Z"
-        fill="none"
-        stroke="white"
-        strokeWidth="1.5"
-      />
-      <line
-        x1="20"
-        y1="30"
-        x2="20"
-        y2="14"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="20"
-        y1="20"
-        x2="15"
-        y2="16"
-        stroke="white"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <line
-        x1="20"
-        y1="17"
-        x2="25"
-        y2="13.5"
-        stroke="white"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <circle cx="20" cy="14" r="1.5" fill="white" />
-      <circle cx="15" cy="16" r="1.2" fill="white" opacity="0.7" />
-      <circle cx="25" cy="13.5" r="1.2" fill="white" opacity="0.7" />
+    <svg className={cn("s-brand-mark", className)} viewBox="395 305 465 318" aria-hidden="true" focusable="false">
+      <path fill="#1b5741" d="M402 617 L525 368 C545 330 580 314 615 314 C650 314 672 330 690 350 C660 345 640 360 628 385 L545 565 C530 598 500 617 455 617 Z" />
+      <path fill="#2a956b" d="M560 617 L683 368 C703 330 738 314 773 314 C808 314 830 334 852 350 C818 345 798 360 786 385 L703 565 C688 598 658 617 613 617 Z" />
+      <path fill="#8bc34a" d="M715 617 L772 512 C778 500 792 500 798 512 L852 617 Z" />
     </svg>
   )
 }

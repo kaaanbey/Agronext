@@ -1,49 +1,52 @@
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import { PricingCards } from "@/components/pricing/pricing-cards"
-import { ComparisonTable } from "@/components/pricing/comparison-table"
-import { PricingAIChat } from "@/components/pricing/pricing-ai-chat"
-import { pricingPlans } from "@/lib/data/pricing"
+import { setRequestLocale } from "next-intl/server"
 
-interface PageProps {
-  params: { locale: string }
-}
-
-export async function generateMetadata({ params: { locale } }: PageProps) {
-  const t = await getTranslations({ locale, namespace: "seo.pricing" })
+export function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+  const tr = locale === "tr"
   return {
-    title: t("title"),
-    description: t("description"),
-    openGraph: {
-      title: t("og_title"),
-      description: t("og_description"),
-    },
+    title: tr ? "Pilot ve iş birliği" : "Pilots and collaboration",
+    description: tr ? "AgroNext'i kendi seranızda denemek için pilot süreci." : "The pilot process for trying AgroNext in your own greenhouse.",
   }
 }
 
-export default async function PricingPage({ params: { locale } }: PageProps) {
+export default function PricingPage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale)
-  const t = await getTranslations("pricing")
-
-  const plans = [...pricingPlans].sort((a, b) => a.sortOrder - b.sortOrder)
-
+  const tr = locale === "tr"
+  const steps = tr
+    ? [
+        ["Serayı tanımak", "Alan, ürün, sulama düzeni ve mevcut ekipman (pompa, fan, ısıtıcı, pano) birlikte çıkarılır."],
+        ["Kapsamı yazmak", "Hangi ölçümlerin alınacağı, hangi kanalların AgroNext'e bağlanacağı ve güvenlik sınırları belirlenir."],
+        ["Yöntemi önceden yazmak", "Karşılaştırma dönemi, ölçülecek büyüklükler ve başarı ölçütü kurulumdan önce yazılır."],
+        ["Kurulum ve izleme", "Modüller kurulur, panel erişimi açılır; ilk haftalar birlikte izlenir."],
+      ]
+    : [
+        ["Understand the greenhouse", "Area, crop, irrigation routine and existing equipment (pump, fan, heater, panel) are mapped together."],
+        ["Write the scope", "Which readings to take, which channels to connect to AgroNext, and the safety limits are defined."],
+        ["Write the method first", "The comparison period, the quantities to measure and the success criterion are written before installation."],
+        ["Install and observe", "Modules are installed, panel access is opened; the first weeks are observed together."],
+      ]
   return (
-    <>
-      <section className="container py-16 md:py-24">
-        <div className="max-w-2xl mx-auto text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">
-            {t("title")}
-          </h1>
-          <p className="mt-4 text-muted-foreground">{t("subtitle")}</p>
-        </div>
-
-        <PricingCards plans={plans} />
-
-        <div className="max-w-3xl mx-auto mt-16">
-          <PricingAIChat />
-        </div>
-      </section>
-
-      <ComparisonTable locale={locale} />
-    </>
+    <div className="s-site s-info">
+      <header className="s-wrap s-info-head">
+        <p className="s-label">{tr ? "Pilot ve iş birliği" : "Pilots and collaboration"}</p>
+        <h1 className="s-doc-title">{tr ? "Kendi seranızda deneyin." : "Try it in your own greenhouse."}</h1>
+        <p className="s-doc-lead">
+          {tr
+            ? "AgroNext ürünleşme aşamasında; paket fiyatı henüz yayımlanmadı. Pilot kurulumlar seraya göre birlikte planlanıyor."
+            : "AgroNext is in productisation; package pricing has not been published yet. Pilot installations are planned together, greenhouse by greenhouse."}
+        </p>
+      </header>
+      <ol className="s-wrap s-pilot">
+        {steps.map(([h, b], i) => (
+          <li key={h}>
+            <span className="s-mono">{String(i + 1).padStart(2, "0")}</span>
+            <h2>{h}</h2>
+            <p>{b}</p>
+          </li>
+        ))}
+      </ol>
+      <div className="s-wrap s-info-cta">
+        <a className="s-link-primary" href={`/${locale}/contact`}>{tr ? "Pilot için iletişime geç" : "Get in touch about a pilot"}<span aria-hidden="true">→</span></a>
+      </div>
+    </div>
   )
 }

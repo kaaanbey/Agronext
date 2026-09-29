@@ -1,97 +1,50 @@
-import { Mail, Phone, MapPin, Linkedin } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/lib/i18n/routing"
-import { Logo } from "./logo"
+import { LogoMark } from "./logo"
 import { companyInfo } from "@/lib/data/company"
 
 export function Footer() {
+  const locale = useLocale()
   const t = useTranslations()
-  const year = new Date().getFullYear()
-
+  const tr = locale === "tr"
+  const d = (slug: string) => `/${locale}/${slug}`
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="container py-12">
-        <div className="grid gap-8 md:grid-cols-4">
-          <div className="space-y-4">
-            <Logo />
-            <p className="text-sm text-muted-foreground max-w-xs">
-              {t("common.tagline")}
-            </p>
-            <div className="flex gap-2">
-              <a
-                href={companyInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-              >
-                <Linkedin className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold mb-3">{t("footer.product")}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/" className="hover:text-foreground">{t("nav.home")}</Link></li>
-              <li><Link href="/pricing" className="hover:text-foreground">{t("nav.pricing")}</Link></li>
-              <li><Link href="/blog" className="hover:text-foreground">{t("nav.blog")}</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold mb-3">{t("footer.company")}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
-              <li><Link href="/contact" className="hover:text-foreground">{t("nav.contact")}</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold mb-3">{t("footer.contact_heading")}</h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <Mail className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground/80" />
-                <a
-                  href={`mailto:${companyInfo.email}`}
-                  className="hover:text-foreground break-all"
-                >
-                  {companyInfo.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Phone className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground/80" />
-                <a
-                  href={`tel:${companyInfo.phoneHref}`}
-                  className="hover:text-foreground"
-                >
-                  {companyInfo.phone}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground/80" />
-                <span>{companyInfo.location}</span>
-              </li>
-            </ul>
-          </div>
+    <footer className="s-footer">
+      <div className="s-footer-main">
+        <div className="s-footer-brand">
+          <LogoMark />
+          <p>{tr ? "Sensörden karara, karardan uygulamaya." : "From sensing to decision, from decision to action."}</p>
         </div>
-
-        <div className="mt-10 border-t pt-6 flex flex-col gap-3 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <div>
-            © {year} AgroNext. {t("footer.rights")}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <Link href="/privacy" className="hover:text-foreground">
-              {t("footer.privacy")}
-            </Link>
-            <Link href="/terms" className="hover:text-foreground">
-              {t("footer.terms")}
-            </Link>
-          </div>
+        <nav aria-label={tr ? "Sistem" : "System"}>
+          <h2>{tr ? "Sistem" : "System"}</h2>
+          <a href={d("sistem")}>{tr ? "Mimari" : "Architecture"}</a>
+          <a href={d("climanex")}>ClimaNex</a>
+          <a href={d("terranex")}>TerraNex</a>
+          <a href={d("yapay-zeka")}>{tr ? "Yerel yapay zekâ" : "Local AI"}</a>
+          <a href={d("nexai")}>NexAI</a>
+        </nav>
+        <nav aria-label={tr ? "Proje" : "Project"}>
+          <h2>{tr ? "Proje" : "Project"}</h2>
+          <a href={d("sonuclar")}>{tr ? "Saha verisi" : "Field data"}</a>
+          <a href={d("urun-ailesi")}>{tr ? "Ürünleşme" : "Product path"}</a>
+          <Link href="/about">{t("nav.about")}</Link>
+          <Link href="/blog">{t("nav.blog")}</Link>
+          <Link href="/pricing">{tr ? "Pilot ve iş birliği" : "Pilots"}</Link>
+          <a href="/panel">{tr ? "Sera paneli" : "Greenhouse panel"}</a>
+        </nav>
+        <div>
+          <h2>{tr ? "İletişim" : "Contact"}</h2>
+          <a href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a>
+          <Link href="/contact">{tr ? "İletişim formu" : "Contact form"}</Link>
+          <a href={companyInfo.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>
+          <span>{companyInfo.location}</span>
         </div>
-
-        <div className="mt-4 text-xs text-muted-foreground/80 italic">
-          {t("footer.disclaimer")}
+      </div>
+      <div className="s-footer-bottom">
+        <span>© {new Date().getFullYear()} AgroNext · agronext.net</span>
+        <div>
+          <Link href="/privacy">{t("footer.privacy")}</Link>
+          <Link href="/terms">{t("footer.terms")}</Link>
         </div>
       </div>
     </footer>

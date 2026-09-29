@@ -1,179 +1,75 @@
 "use client"
 
 import * as React from "react"
-import { useTranslations } from "next-intl"
-import { Menu, X } from "lucide-react"
-import { useSession, signOut } from "next-auth/react"
-import { Link, usePathname } from "@/lib/i18n/routing"
+import { useLocale, useTranslations } from "next-intl"
+import { useSession } from "next-auth/react"
+import { Link, usePathname, useRouter } from "@/lib/i18n/routing"
 import { Logo } from "./logo"
-import { LocaleSwitcher } from "./locale-switcher"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Button } from "@/components/ui/button"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+
+// İnce, sola yaslı üst menü. Ana sayfada bölüm çapalarına, diğer sayfalarda
+// ana sayfanın aynı bölümlerine gider. Mobil menü tam ekran, büyük tipografili.
 
 export function Navbar() {
+  const locale = useLocale() as "tr" | "en"
   const t = useTranslations()
-  const tNav = useTranslations("nav")
-  const { data: session, status } = useSession()
-  const [open, setOpen] = React.useState(false)
+  const { data: session } = useSession()
   const pathname = usePathname()
+  const router = useRouter()
+  const [open, setOpen] = React.useState(false)
+  const home = `/${locale}`
+  const tr = locale === "tr"
 
-  const links = [
-    { href: "/", label: tNav("home") },
-    { href: "/pricing", label: tNav("pricing") },
-    { href: "/about", label: tNav("about") },
-    { href: "/blog", label: tNav("blog") },
-    { href: "/contact", label: tNav("contact") },
-  ]
+  const links: [string, string][] = tr
+    ? [["sistem", "Sistem"], ["climanex", "ClimaNex"], ["terranex", "TerraNex"], ["yapay-zeka", "Yerel AI"], ["nexai", "NexAI"], ["saha", "Saha"]]
+    : [["sistem", "System"], ["climanex", "ClimaNex"], ["terranex", "TerraNex"], ["yapay-zeka", "Local AI"], ["nexai", "NexAI"], ["saha", "Field"]]
 
-  const initials = (session?.user?.name ?? session?.user?.email ?? "U")
-    .split(" ")
-    .map((x) => x[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
+  React.useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [open])
+
+  const other = tr ? "en" : "tr"
+  const switchLocale = () => router.replace(pathname, { locale: other })
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center">
-            <Logo />
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            {links.map((l) => {
-              const active =
-                l.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(l.href)
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-foreground",
-                    active ? "text-foreground" : "text-muted-foreground"
-                  )}
-                >
-                  {l.label}
-                </Link>
-              )
-            })}
-          </nav>
+    <header className="s-nav" data-open={open}>
+      <div className="s-nav-inner">
+        <a href={home} className="s-nav-logo" aria-label="AgroNext"><Logo /></a>
+        <nav className="s-nav-primary" aria-label={tr ? "Ana menü" : "Main navigation"}>
+          {links.map(([id, label]) => <a href={`${home}#${id}`} key={id}>{label}</a>)}
+        </nav>
+        <div className="s-nav-actions">
+          <a className="s-nav-panel" href="/panel">{tr ? "Sera paneli" : "Greenhouse panel"}<span aria-hidden="true">↗</span></a>
+          <button type="button" className="s-nav-lang" onClick={switchLocale} aria-label={tr ? "Switch to English" : "Türkçeye geç"}>
+            <span data-on={tr}>TR</span><span aria-hidden="true">/</span><span data-on={!tr}>EN</span>
+          </button>
+          {session?.user
+            ? <Link className="s-nav-sign" href="/dashboard">{t("common.dashboard")}</Link>
+            : <Link className="s-nav-sign" href="/auth/login">{t("common.signIn")}</Link>}
         </div>
-
-        <div className="hidden md:flex items-center gap-1">
-          {/* Sera paneli dile bağlı değil: i18n Link'i /tr/panel yapıp 404 verdirirdi,
-              bu yüzden düz <a>. Kendi girişi var (Supabase), sitenin girişinden bağımsız. */}
-          <Button variant="outline" size="sm" className="mr-1" asChild>
-            <a href="/panel">{tNav("greenhousePanel")}</a>
-          </Button>
-          <LocaleSwitcher />
-          <ThemeToggle />
-          {status === "authenticated" && session?.user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full ml-1">
-                  <Avatar>
-                    {session.user.image ? (
-                      <AvatarImage src={session.user.image} alt="" />
-                    ) : null}
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>{session.user.name ?? session.user.email}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard">{t("common.dashboard")}</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard/settings">{t("dashboard.nav.settings")}</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
-                  {t("common.signOut")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/login">{t("common.signIn")}</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/auth/register">{t("common.getStarted")}</Link>
-              </Button>
-            </>
-          )}
-        </div>
-
-        <button
-          aria-label="Open menu"
-          className="md:hidden inline-flex items-center justify-center rounded-md p-2 hover:bg-accent"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        <button className="s-nav-toggle" type="button" aria-expanded={open} aria-controls="s-mobile-menu" onClick={() => setOpen(!open)}>
+          <span className="s-visually-hidden">{open ? (tr ? "Menüyü kapat" : "Close menu") : (tr ? "Menüyü aç" : "Open menu")}</span>
+          <span className="s-nav-burger" aria-hidden="true" />
         </button>
       </div>
-
       {open ? (
-        <div className="md:hidden border-t">
-          <nav className="container py-4 flex flex-col gap-2">
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="text-sm font-medium py-2 text-muted-foreground hover:text-foreground"
-              >
-                {l.label}
-              </Link>
-            ))}
-            <a
-              href="/panel"
-              className="text-sm font-medium py-2 text-muted-foreground hover:text-foreground"
-            >
-              {tNav("greenhousePanel")}
-            </a>
-            <div className="flex items-center gap-2 pt-2 border-t">
-              <LocaleSwitcher />
-              <ThemeToggle />
+        <div className="s-mobile" id="s-mobile-menu">
+          <nav aria-label={tr ? "Mobil menü" : "Mobile navigation"}>
+            <ol className="s-mobile-main">
+              {links.map(([id, label], i) => (
+                <li key={id}><a href={`${home}#${id}`} onClick={() => setOpen(false)}><span>{String(i + 1).padStart(2, "0")}</span>{label}</a></li>
+              ))}
+            </ol>
+            <div className="s-mobile-sub">
+              <a href="/panel">{tr ? "Sera paneli" : "Greenhouse panel"} ↗</a>
+              <Link href="/about" onClick={() => setOpen(false)}>{t("nav.about")}</Link>
+              <Link href="/blog" onClick={() => setOpen(false)}>{t("nav.blog")}</Link>
+              <Link href="/contact" onClick={() => setOpen(false)}>{t("nav.contact")}</Link>
+              {session?.user
+                ? <Link href="/dashboard" onClick={() => setOpen(false)}>{t("common.dashboard")}</Link>
+                : <Link href="/auth/login" onClick={() => setOpen(false)}>{t("common.signIn")}</Link>}
+              <button type="button" onClick={() => { setOpen(false); switchLocale() }}>{tr ? "English" : "Türkçe"}</button>
             </div>
-            {session?.user ? (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button asChild size="sm">
-                  <Link href="/dashboard">{t("common.dashboard")}</Link>
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => signOut()}>
-                  {t("common.signOut")}
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/auth/login">{t("common.signIn")}</Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/auth/register">{t("common.getStarted")}</Link>
-                </Button>
-              </div>
-            )}
           </nav>
         </div>
       ) : null}

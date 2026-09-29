@@ -2,7 +2,6 @@ import { setRequestLocale, getTranslations } from "next-intl/server"
 import { useTranslations } from "next-intl"
 import { Mail, Phone, MapPin, Globe, Sparkles } from "lucide-react"
 import { ContactForm } from "@/components/contact/contact-form"
-import { TeamSection } from "@/components/contact/team-section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { companyInfo } from "@/lib/data/company"
@@ -36,11 +35,7 @@ export default function ContactPage({ params: { locale } }: PageProps) {
         <p className="mt-4 text-lg text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <div className="mt-12">
-        <TeamSection />
-      </div>
-
-      <div className="mt-8 grid gap-8 md:grid-cols-[1fr_320px] max-w-5xl mx-auto">
+      <div className="mt-12 grid gap-8 md:grid-cols-[1fr_320px] max-w-5xl mx-auto">
         <div>
           <ContactForm />
         </div>
