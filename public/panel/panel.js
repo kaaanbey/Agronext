@@ -87,6 +87,11 @@ function co2Temizle(satirlar) {
   for (const r of satirlar) if (doluMu(r.co2) && Number(r.co2) >= CO2_TAVAN) r.co2 = null;
   return satirlar;
 }
+// Pompa bu kurulumda henüz devreye alınmadı (röle kartı çalıştırılmıyor). Kayıt yoksa
+// "0 dk · devrede değil" gösterilir: pompayı yalnız saha kartı sürer, kart pompayı
+// sürmüyorsa pompa çalışmamıştır. Pompa bağlanınca true yap; o zaman kayıt yoksa
+// eskisi gibi "Veri yok" yazar. pump kolonu dolu gelirse bu ayar hiç devreye girmez.
+const POMPA_DEVREDE = false;
 const ESIK_VARSAYILAN = 32;   // sulama_esigi(); tahmin kaydı gelmezse kullanılır
 // Eğilim oku: son 30 dk ortalaması ile önceki 30 dk arasındaki fark bundan küçükse "sabit".
 // soil_ec ve gas_res mutlak ölçek taşımaz: eşikleri değerin %3'üyle büyür (trendEsigi).
@@ -131,6 +136,7 @@ const durum = {
   zamanlayici: null,
   uyarilar: [],        // uyarilariHesapla() çıktısı; NexAI de buradan okur
   sohbetBasladi: false,
+  elle: {},            // { alan: son elle ölçüm } — elle_olcumler (v4), sensör verisi DEĞİL
 };
 
 // ------------------------------------------------------------ yardımcılar
@@ -235,7 +241,7 @@ function olcumMetni(alan, onek) {
 }
 function pompaMetni() {
   const r = sonDolu(durum.readings, "pump");
-  if (!r) return "pompa kaydı yok";
+  if (!r) return POMPA_DEVREDE ? "pompa kaydı yok" : "devrede değil · bugün 0 dk";
   return Number(r.pump) === 1 ? "çalışıyor" : "kapalı";
 }
 // Son 24 saatte pompanın açık görüldüğü en son an (pump kolonu).
@@ -357,6 +363,11 @@ async function yenile() {
       : sb.from("predictions").select("created_at").order("created_at", { ascending: true }).limit(1),
   ]);
   durum.v2Yok = [cih, tah, one, akt].some((r) => semaEksik(r.error));
+  // v4 elle ölçümler: tablo yoksa ya da okunamazsa sessizce boş kalır (kart eski hâline döner).
+  const elle = await sb.from("elle_olcumler").select("alan,deger,olculdu,yontem")
+    .order("olculdu", { ascending: false }).limit(20);
+  durum.elle = {};
+  for (const e of elle.data || []) if (!durum.elle[e.alan]) durum.elle[e.alan] = e;
   durum.cihazlar = cih.data || [];
   durum.tahminler = tah.data || [];
   durum.oneriler = one.data || [];
@@ -438,6 +449,17 @@ function olcumKarti(k, satirlar) {
     kart.append(d, el("div", "yas", CO2_GECMIS_ORT.not));
     return kart;
   }
+  // Sensör değeri yoksa elle yapılmış saha ölçümü (yalnız pH gibi yavaş değişen alanlar).
+  // Etiket ve tarih açıkça yazılır; sparkline/eğilim yok, uyarılara girmez.
+  const elle = !bulunan && durum.elle[k];
+  if (elle) {
+    adlar.lastChild.textContent = "Periyodik saha ölçümü";
+    ust.append(el("span", "etiket notr", "Elle ölçüm"));
+    const d = el("div", "deger", sayi(elle.deger, a.b));
+    if (a.birim) d.append(el("span", "birim", a.birim));
+    kart.append(d, el("div", "yas", "Ölçüldü " + saat(elle.olculdu) + " · " + elle.yontem));
+    return kart;
+  }
   if (!bulunan) {
     kart.append(el("div", "deger metin", a.yokMetni || "Veri yok"), el("div", "yas", ""));
     return kart;
@@ -507,8 +529,12 @@ function genelCiz() {
   ust.append(adlar);
   pk.append(ust);
   const dk = pompaDakika(durum.readings);
-  if (dk === null) {
+  if (dk === null && POMPA_DEVREDE) {
     pk.append(el("div", "deger metin", "Veri yok"), el("div", "yas", ""));
+  } else if (dk === null) {
+    const d = el("div", "deger", "0");
+    d.append(el("span", "birim", "dk"));
+    pk.append(d, el("div", "yas", "Pompa henüz devrede değil · bugün çalışmadı"));
   } else {
     const satir = el("div", "deger-satir");
     const d = el("div", "deger", sayi(dk, 0));
@@ -606,9 +632,11 @@ function ozetBarCiz() {
   const ss = sonSulama();
   const dk = pompaDakika(durum.readings);
   hedef.append(ozetKutu(pompa && Number(pompa.pump) === 1 ? "bilgi" : "", IKON.damla, "Sulama durumu",
-    !pompa ? "Pompa kaydı yok" : Number(pompa.pump) === 1 ? "Pompa çalışıyor" : "Pompa kapalı",
+    !pompa ? (POMPA_DEVREDE ? "Pompa kaydı yok" : "Pompa kapalı")
+      : Number(pompa.pump) === 1 ? "Pompa çalışıyor" : "Pompa kapalı",
     ss ? "Son sulama " + yasMetni(sn(ss)) + (dk !== null ? " · bugün " + sayi(dk, 0) + " dk" : "")
-       : pompa ? "Son 24 saatte sulama yok" : "Pompa verisi gelmiyor"));
+       : pompa ? "Son 24 saatte sulama yok"
+       : POMPA_DEVREDE ? "Pompa verisi gelmiyor" : "Henüz devrede değil · bugün 0 dk"));
 
   const t = durum.tahminler[0];
   hedef.append(ozetKutu("", IKON.yz, "Son karar",
@@ -1289,6 +1317,14 @@ const NEXAI_KURALLAR = [
           "İklim tarafında ClimaNEX sıcaklık, bağıl nem ve CO₂ ölçüyor. CO₂ yükselirse havalandırma önerisini uyarılarda görürsün."] }) },
   { k: /\bph\b|asit/, f: () => {
       const r = sonDolu(durum.readings, "soil_ph");
+      const e = durum.elle.soil_ph;
+      if (!r && e) {
+        const v = Number(e.deger);
+        return { p: ["Toprak pH son saha ölçümünde " + sayi(v, 1) + " (" + saat(e.olculdu) + ", " + e.yontem + ").",
+                     "Domates gibi sera sebzeleri için genelde 5,5–6,8 önerilir; bu değer " +
+                     (v < 5.5 ? "aralığın altında (asidik)." : v > 6.8 ? "aralığın üstünde (bazik)." : "aralığın içinde."),
+                     "Toprak pH'ı günler içinde yavaş değiştiği için sürekli sensör yerine periyodik elle ölçüyoruz."] };
+      }
       if (!r) return { p: ["Toprak pH sensörü henüz doğrulanıyor, ölçüm gelmiyor. Ölçmediğim bir değerin bitkiye uygun olup olmadığını söyleyemem.",
                            "Bilgi olarak: domates gibi sera sebzeleri için genelde 5,5–6,8 arası önerilir."] };
       const v = Number(r.soil_ph);
@@ -1303,6 +1339,8 @@ const NEXAI_KURALLAR = [
   { k: /pompa|role/, f: () => {
       const r = sonDolu(durum.readings, "pump");
       const dk = pompaDakika(durum.readings), ss = sonSulama();
+      if (!r && !POMPA_DEVREDE) return { p: ["Pompa bu kurulumda henüz devreye alınmadı; bugün çalışmadı (0 dk).",
+                                              "Pompayı yalnız sahadaki kart sürer; panelden uzaktan komut gönderilemez."] };
       if (!r) return { p: ["Pompa durumu buluta gelmiyor, bu yüzden şu an çalışıp çalışmadığını göremiyorum."] };
       return { p: ["Pompa şu an " + (Number(r.pump) === 1 ? "çalışıyor" : "kapalı") + ".",
                    (ss ? "Son sulama " + yasMetni(sn(ss)) + "." : "Son 24 saatte pompa çalışmadı.") +
